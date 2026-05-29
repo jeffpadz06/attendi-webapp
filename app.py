@@ -20,7 +20,7 @@ auth = firebase.auth()
 db = firebase.database()
 
 app = Flask(__name__)
-app.secret_key = os.urandom(24)
+app.secret_key = os.environ.get("SECRET_KEY", "dev_secret")
 
 # ================= AUTH =================
 def isAuthenticated(f):
@@ -300,5 +300,6 @@ def update_user(emp_id):
         return jsonify({"success": False})
 
 # ================= RUN =================
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
