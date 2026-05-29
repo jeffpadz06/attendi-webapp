@@ -15,9 +15,15 @@ config = {
   "appId": "1:779432739488:web:c59608f80245e151833fc5"
 }
 
-firebase = pyrebase.initialize_app(config)
-auth = firebase.auth()
-db = firebase.database()
+firebase = None
+auth = None
+db = None
+
+def init_firebase():
+    global firebase, auth, db
+    firebase = pyrebase.initialize_app(config)
+    auth = firebase.auth()
+    db = firebase.database()
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev_secret")
