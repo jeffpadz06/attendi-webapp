@@ -1,0 +1,27 @@
+<nav>
+    <ul>
+        <li>
+            <img src="{{ url_for('static', filename='assets/logo.png') }}" alt="Logo" style="height: 40px; vertical-align: middle; margin-right: 0px;">
+            <a href="/">ATTENDI-PI</a>
+        </li>
+    </ul>
+    <ul>
+        <li><a href="/">Home</a></li>
+        {% if session["usr"] %}
+        <li><a href="/attendance">Attendance</a></li>
+        <li><a href="/users">Users</a></li>
+        {% endif %}
+        {% if not session["usr"] %}
+        <li><a href="/signup">SignUp</a></li>
+        <li><a href="/login">Login</a></li>
+        {% endif %}
+
+        {% if session["usr"] %}
+        <li><a href="/logout"> Logout</a></li>
+        {% endif %}
+       
+        {% if session["email"] %}
+        <li>{{ session["email"] }} </li>
+        {% endif %}
+    </ul>
+</nav>

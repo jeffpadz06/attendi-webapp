@@ -1,0 +1,194 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center text-success mb-4">User List</h2>
+
+    <!-- EXPORT BUTTON -->
+    <button id="exportExcel" class="btn btn-success mb-3">
+        Export to Excel
+    </button>
+
+    <table id="userTable" class="custom-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Image</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Registered</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for emp_id, emp in employees.items() %}
+            <tr>
+
+                <td>{{ emp_id }}</td>
+
+                <td>
+                    {% if emp.image_url %}
+                        <img src="{{ emp.image_url }}" width="50" height="50" style="border-radius:50%;">
+                    {% else %}
+                        N/A
+                    {% endif %}
+                </td>
+
+                <td>
+                    <input type="text"
+                           id="name-{{ emp_id }}"
+                           value="{{ emp.name }}"
+                           disabled>
+                </td>
+
+                <td>
+                    <input type="email"
+                           id="email-{{ emp_id }}"
+                           value="{{ emp.email }}"
+                           disabled>
+                </td>
+
+                <td>{{ emp.timestamp }}</td>
+
+                <td>
+                    <button id="btn-{{ emp_id }}"
+                            class="btn btn-warning btn-sm"
+                            onclick="toggleEdit('{{ emp_id }}')">
+                        Edit
+                    </button>
+                </td>
+
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- LIBRARIES -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script>
+$(document).ready(function () {
+    $('#userTable').DataTable();
+
+    // ================= EXPORT EXCEL (FIXED) =================
+    document.getElementById('exportExcel').addEventListener('click', function () {
+
+        let table = document.getElementById('userTable');
+        let rows = table.querySelectorAll("tbody tr");
+
+        let data = [];
+
+        // headers
+        data.push(["Employee ID", "Name", "Email", "Timestamp"]);
+
+        rows.forEach(row => {
+            let cols = row.querySelectorAll("td");
+
+            let empId = cols[0].innerText;
+
+            let name = cols[2].querySelector("input").value;
+            let email = cols[3].querySelector("input").value;
+
+            let timestamp = cols[4].innerText;
+
+            data.push([empId, name, email, timestamp]);
+        });
+
+        let wb = XLSX.utils.book_new();
+        let ws = XLSX.utils.aoa_to_sheet(data);
+
+        XLSX.utils.book_append_sheet(wb, ws, "Users");
+        XLSX.writeFile(wb, "users_export.xlsx");
+    });
+});
+
+
+// ================= TOGGLE EDIT / SAVE =================
+function toggleEdit(emp_id) {
+    let nameInput = document.getElementById(`name-${emp_id}`);
+    let emailInput = document.getElementById(`email-${emp_id}`);
+    let btn = document.getElementById(`btn-${emp_id}`);
+
+    let isEditing = !nameInput.disabled;
+
+    // ================= SAVE =================
+    if (isEditing) {
+        fetch(`/update_user/${emp_id}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: nameInput.value,
+                email: emailInput.value
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                nameInput.disabled = true;
+                emailInput.disabled = true;
+
+                btn.innerHTML = "Edit";
+                btn.className = "btn btn-warning btn-sm";
+            } else {
+                alert("Save failed!");
+            }
+        })
+        .catch(() => alert("Server error!"));
+    }
+
+    // ================= EDIT =================
+    else {
+        nameInput.disabled = false;
+        emailInput.disabled = false;
+
+        btn.innerHTML = "Save";
+        btn.className = "btn btn-success btn-sm";
+    }
+}
+</script>
+
+<style>
+.container {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 12px;
+}
+
+.custom-table {
+    width: 100%;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.custom-table thead {
+    background: #198754;
+    color: white;
+}
+
+.custom-table th, .custom-table td {
+    text-align: center;
+    padding: 10px;
+}
+
+input {
+    width: 100%;
+    padding: 5px;
+    text-align: center;
+    border-radius: 5px;
+}
+
+input:disabled {
+    background: #eee;
+    border: none;
+}
+</style>
+
+{% endblock %}

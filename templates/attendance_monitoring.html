@@ -1,0 +1,174 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <h2 class="text-center text-success mb-4">
+        Attendance Monitoring
+    </h2>
+
+    <!-- EXPORT BUTTON -->
+    <button id="exportExcel" class="btn btn-success mb-3">
+        Export to Excel
+    </button>
+
+    <div class="table-responsive">
+        <table id="attendanceTable" class="custom-table">
+
+            <thead>
+                <tr>
+                    <th>Employee ID</th>
+                    <th>Photo</th>
+                    <th>Name</th>
+                    <th>Date</th>
+                    <th>Login</th>
+                    <th>Logout</th>
+                    <th>Duration</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for rec in attendance_rows %}
+                <tr>
+
+                    <td>{{ rec.emp_id }}</td>
+
+                    <td>
+                        {% if rec.image %}
+                            <img src="{{ rec.image }}" class="avatar">
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </td>
+
+                    <td>{{ rec.name }}</td>
+                    <td>{{ rec.date }}</td>
+                    <td>{{ rec.time_in if rec.time_in else "-" }}</td>
+                    <td>{{ rec.time_out if rec.time_out else "-" }}</td>
+                    <td>{{ rec.total_time }}</td>
+
+                    <td>
+                        <form method="POST"
+                              action="{{ url_for('delete_attendance', emp_id=rec.emp_id, date=rec.date) }}"
+                              onsubmit="return confirm('Delete this record?')">
+
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                Delete
+                            </button>
+
+                        </form>
+                    </td>
+
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+</div>
+
+<!-- LIBRARIES -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<script>
+$(document).ready(function () {
+
+    $('#attendanceTable').DataTable({
+        order: [] // keep Flask sorting
+    });
+
+    // ================= EXPORT FIXED =================
+    document.getElementById('exportExcel').addEventListener('click', function () {
+
+        let table = document.getElementById('attendanceTable');
+        let rows = table.querySelectorAll("tbody tr");
+
+        let data = [];
+
+        // headers
+        data.push([
+            "Employee ID",
+            "Name",
+            "Date",
+            "Login",
+            "Logout",
+            "Duration"
+        ]);
+
+        rows.forEach(row => {
+            let cols = row.querySelectorAll("td");
+
+            let empId = cols[0].innerText;
+
+            let name = cols[2].innerText;
+            let date = cols[3].innerText;
+            let login = cols[4].innerText;
+            let logout = cols[5].innerText;
+            let duration = cols[6].innerText;
+
+            data.push([empId, name, date, login, logout, duration]);
+        });
+
+        let wb = XLSX.utils.book_new();
+        let ws = XLSX.utils.aoa_to_sheet(data);
+
+        XLSX.utils.book_append_sheet(wb, ws, "Attendance");
+        XLSX.writeFile(wb, "attendance.xlsx");
+    });
+
+});
+</script>
+
+<style>
+.container {
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0px 5px 15px rgba(0,0,0,0.08);
+}
+
+/* TABLE STYLE (MATCH USERS PAGE) */
+.custom-table {
+    width: 100%;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    border-collapse: collapse;
+}
+
+.custom-table thead {
+    background: #198754;
+    color: white;
+}
+
+.custom-table th, .custom-table td {
+    text-align: center;
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.custom-table tbody tr:hover {
+    background-color: #e9f5ee;
+    transition: 0.2s ease;
+}
+
+/* IMAGE STYLE */
+.avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #198754;
+}
+
+/* DELETE BUTTON IMPROVEMENT */
+.btn-danger {
+    border-radius: 6px;
+}
+</style>
+
+{% endblock %}

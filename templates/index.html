@@ -1,0 +1,176 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+
+<div class="dashboard">
+
+    <!-- HEADER -->
+    <div class="header" data-aos="fade-down">
+        <img src="{{ url_for('static', filename='assets/logo.png') }}" class="logo">
+        <h1>Attendance Dashboard</h1>
+        <p>Smart AI-powered attendance monitoring system</p>
+    </div>
+
+    <!-- CARDS -->
+    <div class="grid">
+
+        <!-- DAILY -->
+        <div class="card card-green" data-aos="zoom-in">
+            <div class="icon">
+                <i class="fa-solid fa-calendar-day"></i>
+            </div>
+            <h2>{{ daily_count }}</h2>
+            <p>Today Present</p>
+        </div>
+
+        <!-- WEEKLY -->
+        <div class="card card-blue" data-aos="zoom-in" data-aos-delay="100">
+            <div class="icon">
+                <i class="fa-solid fa-calendar-week"></i>
+            </div>
+            <h2>{{ weekly_count }}</h2>
+            <p>This Week</p>
+        </div>
+
+        <!-- MONTHLY -->
+        <div class="card card-purple" data-aos="zoom-in" data-aos-delay="200">
+            <div class="icon">
+                <i class="fa-solid fa-calendar"></i>
+            </div>
+            <h2>{{ monthly_count }}</h2>
+            <p>This Month</p>
+        </div>
+
+        <!-- REGISTERED -->
+        <div class="card card-dark" data-aos="zoom-in" data-aos-delay="300">
+            <div class="icon">
+                <i class="fa-solid fa-users"></i>
+            </div>
+            <h2>{{ registered_count }}</h2>
+            <p>Registered Users</p>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- STYLE -->
+<style>
+
+body {
+    background: #ffffff;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* HEADER */
+.header {
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 40px;
+}
+
+.logo {
+    width: 110px;
+    margin-bottom: 10px;
+}
+
+.header h1 {
+    margin: 5px;
+    font-size: 28px;
+    color: #222;
+}
+
+.header p {
+    color: #777;
+    font-size: 14px;
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 25px;
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* CARD BASE */
+.card {
+    border-radius: 18px;
+    padding: 25px;
+    text-align: center;              /* CENTER EVERYTHING */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    color: #fff;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+}
+
+/* ICON */
+.icon {
+    width: 65px;
+    height: 65px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    background: rgba(255,255,255,0.25);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+/* TEXT */
+.card h2 {
+    font-size: 32px;
+    margin: 0;
+}
+
+.card p {
+    margin: 0;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* UNIQUE BACKGROUNDS */
+.card-green {
+    background: linear-gradient(135deg, #00b894, #00cec9);
+}
+
+.card-blue {
+    background: linear-gradient(135deg, #0984e3, #74b9ff);
+}
+
+.card-purple {
+    background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+}
+
+.card-dark {
+    background: linear-gradient(135deg, #2d3436, #636e72);
+}
+
+</style>
+
+<!-- AOS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script>
+AOS.init({
+    duration: 800,
+    easing: "ease-in-out"
+});
+</script>
+
+{% endblock %}
