@@ -307,5 +307,6 @@ def update_user(emp_id):
 
 # ================= RUN =================
 if __name__ == "__main__":
+    init_firebase()
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
