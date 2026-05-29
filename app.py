@@ -26,7 +26,7 @@ def init_firebase():
     db = firebase.database()
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "dev_secret")
+app.secret_key = os.environ.get("SECRET_KEY", "dev_secret_key")
 
 init_firebase()
 # ================= AUTH =================
