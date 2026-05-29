@@ -1,6 +1,5 @@
-Flask==3.1.1
-Pyrebase4==4.8.0
-gunicorn==23.0.0
-requests==2.32.4
-Werkzeug==3.1.3
-Jinja2==3.1.6
+Flask==3.0.3
+gunicorn==22.0.0
+pyrebase4==4.8.0
+requests==2.31.0
+urllib3==1.26.18
