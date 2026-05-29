@@ -4,15 +4,18 @@ from flask import Flask, render_template, redirect, request, url_for, session, j
 import pyrebase
 from datetime import datetime, timedelta
 
+app = Flask(__name__)
+app.secret_key = os.environ.get("SECRET_KEY", "dev_secret_key")
+
 # ================= FIREBASE CONFIG =================
 config = {
-  "apiKey": "AIzaSyBMvDlJPf56koQdhjdjFZNOEtiKYedzYXw",
-  "authDomain": "attendipi-ccd4e.firebaseapp.com",
-  "databaseURL": "https://attendipi-ccd4e-default-rtdb.firebaseio.com",
-  "projectId": "attendipi-ccd4e",
-  "storageBucket": "attendipi-ccd4e.firebasestorage.app",
-  "messagingSenderId": "779432739488",
-  "appId": "1:779432739488:web:c59608f80245e151833fc5"
+    "apiKey": "AIzaSyBMvDlJPf56koQdhjdjFZNOEtiKYedzYXw",
+    "authDomain": "attendipi-ccd4e.firebaseapp.com",
+    "databaseURL": "https://attendipi-ccd4e-default-rtdb.firebaseio.com",
+    "projectId": "attendipi-ccd4e",
+    "storageBucket": "attendipi-ccd4e.firebasestorage.app",
+    "messagingSenderId": "779432739488",
+    "appId": "1:779432739488:web:c59608f80245e151833fc5"
 }
 
 firebase = None
@@ -21,14 +24,22 @@ db = None
 
 def init_firebase():
     global firebase, auth, db
-    firebase = pyrebase.initialize_app(config)
-    auth = firebase.auth()
-    db = firebase.database()
 
-app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "dev_secret_key")
+    try:
+        firebase = pyrebase.initialize_app(config)
+        auth = firebase.auth()
+        db = firebase.database()
+        print("Firebase initialized successfully")
 
-init_firebase()
+    except Exception as e:
+        print("FIREBASE ERROR:", str(e))
+        raise
+
+try:
+    init_firebase()
+except Exception as e:
+    print("APPLICATION STARTUP ERROR:", str(e))
+  
 # ================= AUTH =================
 def isAuthenticated(f):
     @wraps(f)
