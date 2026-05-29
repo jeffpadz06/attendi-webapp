@@ -5,7 +5,7 @@ import pyrebase
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
-app.secret_key = os.environ.get("SECRET_KEY", "dev_secret_key")
+app.secret_key = os.environ.get("SECRET_KEY")
 
 # ================= FIREBASE CONFIG =================
 config = {
